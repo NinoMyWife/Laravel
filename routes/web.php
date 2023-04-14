@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\ExtraFeesController;
-use App\Http\Controllers\FeelistsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Chart\RefundController;
+use App\Http\Controllers\ExpenseReportController;
+use App\Http\Controllers\ExpenseReportExtraFeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,20 +17,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return to_route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+    // Report
+    Route::resource('report', ExpenseReportController::class);
 
-require __DIR__.'/auth.php';
+    // Nested Controllers
+    Route::resource('expenseReports.extraFees', ExpenseReportExtraFeeController::class);
+});
 
-// Route::get('/fraishorsforfait', [ExtraFeesController::class, 'display'])->middleware(['auth']);
-// Route::post('/fraishorsforfait', [ExtraFeesController::class, 'store'])->middleware(['auth'])->name('extrafees.store');
-Route::get('/listefrais', [FeelistsController::class, 'display'])->middleware(['auth']);
-Route::post('/listefrais', [FeelistsController::class, 'store'])->middleware(['auth'])->name('listefrais.store');
-
-Route::get('/fraishorsforfait', [ExtraFeesController::class, 'display'])->middleware(['auth']);
-Route::post('/fraishorsforfait', [ExtraFeesController::class, 'store'])->middleware(['auth'])->name('fraishorsforfait.store');
-Route::get('/download/fraishorsforfait/{linesfeeoutpackage}', [ExtraFeesController::class, 'download'])->middleware(['auth'])->name('fraishorsforfait.download');
+require __DIR__ . '/auth.php';
